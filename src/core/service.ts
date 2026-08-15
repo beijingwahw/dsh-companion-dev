@@ -8,7 +8,7 @@
  *   策略层（路由/调度/预算）由成本模块的 companionCost 服务包装。
  */
 import { Service, type Context } from '@deepseek-ai/cordis'
-import { defineDomain, type Domain } from '@deepseek-ai/dsh-storage'
+import { defineDomain, wrapFacility, type Domain, type DomainFacility as PluginDomainFacility } from './storage-adapter.js'
 import type { Config } from '../config.js'
 import {
   chatCompletion,
@@ -101,10 +101,15 @@ declare module '@deepseek-ai/cordis' {
 }
 
 export class CompanionCoreService extends Service implements CompanionCore {
+  /** 依赖服务：HTTP 路由宿主、存储域设施、凭据解析。 */
+  static inject = ['webServer', 'storageDomain', 'credentials']
+
   readonly http: CompanionRouter = createRouter('/companion')
   readonly prices: PriceService
   /** 内部存储域初始化 promise；失败后被重置，下次访问 ready 时重试 open。 */
   private readyPromise?: Promise<CompanionStore>
+  /** 经适配层包装的存储设施（懒初始化）。 */
+  private storageFacility?: PluginDomainFacility
   /** API 调用钩子集合（安全模块注入）。 */
   private readonly callHooks = new Set<CallHook>()
 
@@ -125,12 +130,14 @@ export class CompanionCoreService extends Service implements CompanionCore {
 
     // 私有 HTTP 前缀路由：各模块经 ctx.companion.http 挂载端点。
     ctx.effect(
-      () =>
-        ctx.webServer.register({
+      () => {
+        const dispose = ctx.webServer.register({
           kind: 'prefix',
           path: '/companion',
           handler: (req, res) => this.http.handle(req, res),
-        }),
+        })
+        return dispose
+      },
       'companion.http-route',
     )
 
@@ -146,7 +153,8 @@ export class CompanionCoreService extends Service implements CompanionCore {
   /** 懒性创建（或复用）存储域初始化 promise，并为其挂兜底 catch。 */
   private ensureReady(): Promise<CompanionStore> {
     if (!this.readyPromise) {
-      const promise = this.ctx.storageDomain.open(COMPANION_DOMAIN).then((domain) => ({
+      this.storageFacility ??= wrapFacility(this.ctx.storageDomain)
+      const promise = this.storageFacility.open(COMPANION_DOMAIN).then((domain) => ({
         domain,
         vault: new SecretVault(domain),
         usage: new UsageStore(domain),

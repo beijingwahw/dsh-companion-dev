@@ -405,7 +405,7 @@ export function apply(ctx: Context): void {
               for (const job of activeJobs.slice(0, 5)) {
                 lines.push(`  · ${job.name}（${job.scheduleText}）${job.offPeakOnly ? '【空闲时段执行】' : ''}`)
               }
-              return { text: lines.join('\n') }
+              return { kind: 'success', text: lines.join('\n') }
             },
           }),
         ]

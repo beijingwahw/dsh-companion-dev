@@ -164,14 +164,14 @@ export function apply(ctx: Context): void {
           ctx.commands.register({
             name: 'trace',
             description: '分析会话执行轨迹（耗时/Token/异常）',
-            input: '[会话ID]',
+            input: { hint: '[会话ID]' },
             handler: async (invocation: CommandInvocation): Promise<CommandResult> => {
-              const input = (invocation.input ?? '').trim()
+              const input = (invocation.rawInput ?? '').trim()
               let sessionId = input.length > 0 ? input : undefined
               if (!sessionId) {
                 const sessions = await ctx.sessionQuery.listSessions()
                 const latest = [...sessions].sort((a, b) => b.createdAt - a.createdAt)[0]
-                if (!latest) return { text: '暂无可分析的会话' }
+                if (!latest) return { kind: 'error', text: '暂无可分析的会话' }
                 sessionId = latest.id
               }
               try {
@@ -200,9 +200,9 @@ export function apply(ctx: Context): void {
                 } else {
                   lines.push('- 未检测到异常模式')
                 }
-                return { text: lines.join('\n'), data: { stats, anomalies } }
+                return { kind: 'success', text: lines.join('\n') }
               } catch {
-                return { text: '轨迹分析失败，请稍后重试' }
+                return { kind: 'error', text: '轨迹分析失败，请稍后重试' }
               }
             },
           }),

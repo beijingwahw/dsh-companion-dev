@@ -262,13 +262,13 @@ export function apply(ctx: Context): void {
             description: '查看 Prompt 版本历史',
             handler: async (_invocation: CommandInvocation): Promise<CommandResult> => {
               const list = versions.list()
-              if (list.length === 0) return { text: '尚未保存任何 Prompt 版本' }
+              if (list.length === 0) return { kind: 'success', text: '尚未保存任何 Prompt 版本' }
               const lines = [`Prompt 版本历史（共 ${list.length} 个版本）：`]
               for (const record of list.slice(-10)) {
                 const tags = record.tags.length > 0 ? `（${record.tags.join('、')}）` : ''
                 lines.push(`v${record.version}${tags} ${record.note || ''}`.trim())
               }
-              return { text: lines.join('\n') }
+              return { kind: 'success', text: lines.join('\n') }
             },
           }),
         ]
