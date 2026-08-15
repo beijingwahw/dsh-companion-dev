@@ -1,5 +1,9 @@
 # DeepSeek Companion（开发者版）
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![dsh-plugin](https://img.shields.io/badge/dsh-plugin-blue)](https://github.com/topics/dsh-plugin)
+[![DeepSeek Harness](https://img.shields.io/badge/DeepSeek-Harness-orange)](https://github.com/deepseek-ai/deepseek-harness)
+
 > **版本说明**：本仓库为**开发者版**，包含 A–J 全部九大模块。
 > 精简版（A–D 四大基础模块）请见 [beijingwahw/dsh-companion](https://github.com/beijingwahw/dsh-companion)。
 
