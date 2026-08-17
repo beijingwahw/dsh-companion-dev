@@ -12,7 +12,7 @@
     root: ['.']      # 监视仓库目录（默认忽略 node_modules / .* / cache / data）
 - id: host-stubs
   name: './dev/host-stubs.ts'
-- id: companion
+- id: companion-dev
   name: './src/index.ts'
   config:
     # 九个功能模块可独立启停，互不影响（与 cordis.patch.yml 逐键一致）
