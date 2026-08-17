@@ -39,18 +39,23 @@
 ### 前置要求
 - [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) `>= 0.1.0`
 - Node.js `^22.19 || >=24`
-- pnpm（`npm install -g pnpm`）
-  
-将本仓库放入 DeepSeek Harness 的插件目录（或通过包管理器安装），Harness 会依据 dsh.plugin.json 与 cordis.patch.yml 自动加载。
 
-### 从源码安装
+推荐用 dsh CLI 一键安装（`--profile` 指定目标 profile，如 `web`；构建产物 `lib/` 已随仓库分发，安装零构建脚本）：
+
+```bash
+dsh plugin add beijingwahw/dsh-companion-dev --profile web
+dsh web
+```
+
+> 注：包名为 `dsh-companion`（manifest id `deepseek-companion`），从本仓安装时仓库名带 `-dev` 后缀不影响。
+
+也可以从源码安装：
 
 ```bash
 git clone https://github.com/beijingwahw/dsh-companion-dev.git
 cd dsh-companion-dev
 pnpm install
 pnpm run build
-
 ```
 
 ### 启动
